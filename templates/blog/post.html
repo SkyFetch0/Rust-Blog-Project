@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} | Skyfetch</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/post.css">
+</head>
+
+<body>
+{% include "partials/header.html" %}
+<div class="container">
+    <article class="blog-post">
+        <header class="post-header">
+            <h1 class="post-title">{{ post.title }}</h1>
+            <div class="post-meta">
+                {% if let Some(date) = post.published_at %}
+                <span class="post-date"><i class="far fa-calendar"></i> {{ date|time_ago }}</span>
+
+                {% endif %}
+                <span class="post-author"><i class="far fa-user"></i> {{ post.author_name }}</span>
+                <span class="post-category"><i class="far fa-folder"></i> Kategori</span>
+            </div>
+        </header>
+
+        {% if post.featured_image.is_some() %}
+        <div class="post-image">
+            <img src="{{ post.featured_image.as_ref().unwrap() }}" alt="Blog Post Resmi">
+        </div>
+        {% endif %}
+
+
+
+        <div class="post-content">
+            {% if post.content.is_some() %}
+            <p>{{ post.content.as_ref().unwrap()|safe }}</p>
+            {% else %}
+            <p>İçerik bulunamadı</p>
+            {% endif %}
+        </div>
+
+
+
+        <footer class="post-footer">
+
+            {% if !post.categories.is_empty() %}
+            <div class="tags">
+                {% for category in post.categories %}
+                <span data-slug="{{ category.slug }}" class="tag">{{ category.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="share-buttons">
+                <button class="share-button facebook"><i class="fab fa-facebook-f"></i></button>
+                <button class="share-button twitter"><i class="fab fa-twitter"></i></button>
+            </div>
+        </footer>
+    </article>
+
+    <div class="author-box">
+        {% if let Some(image) = post.author_image %}
+        <img src="{{ image }}" alt="{{ post.author_name }}" class="author-avatar">
+        {% endif %}
+        <div class="author-info">
+            <h3>{{post.author_name}}</h3>
+            {% if post.author_description.is_some() %}
+                <p>{{ post.author_description.as_ref().unwrap() }}</p>
+                {% else %}
+                <p>Açıklama Bulunamadı.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="comments-section">
+        <h3 class="comments-title">Yorumlar</h3>
+        <div id="comments-container"></div>
+
+        <form id="comment-form">
+            <h4 class="form-title">Yorum Yap</h4>
+            <div class="form-group">
+                <input type="text" id="name" name="name" placeholder="İsminiz" required>
+            </div>
+            <div class="form-group">
+                <textarea id="comment" name="comment" placeholder="Yorumunuz..." required></textarea>
+            </div>
+            <button type="submit">
+                <i class="fas fa-paper-plane"></i> Gönder
+            </button>
+        </form>
+    </div>
+
+    <style>
+        .comments-section {
+            margin-top: 3rem;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            padding: 2rem;
+        }
+
+        .comments-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .comment {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .comment:hover {
+            transform: translateX(5px);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .comment-date {
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+
+        .comment-content {
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        #comment-form {
+            margin-top: 2.5rem;
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        button[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"] i {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive tasarım için */
+        @media (max-width: 768px) {
+            .comments-section {
+                padding: 1rem;
+            }
+
+            #comment-form {
+                padding: 1rem;
+            }
+
+            .comment {
+                padding: 1rem;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const postId = '{{ post.id.as_ref().unwrap() }}';
+
+            function fetchComments() {
+                fetch(`/api/comments/get/${postId}`)
+                    .then(response => response.json())
+                    .then(response => {
+                        const container = document.getElementById('comments-container');
+                        container.innerHTML = '';
+
+                        if (!response.status || response.data.length === 0) {
+                            container.innerHTML = '<p class="no-comments">Henüz yorum yapılmamış. İlk yorumu siz yapın!</p>';
+                            return;
+                        }
+
+                        response.data.forEach(comment => {
+                            const commentElement = createCommentElement(comment);
+                            container.appendChild(commentElement);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Yorumlar yüklenirken hata:', error);
+                    });
+            }
+
+            function createCommentElement(comment) {
+                const div = document.createElement('div');
+                div.className = 'comment';
+                div.innerHTML = `
+                <div class="comment-header">
+                    <span class="comment-author">
+                        <i class="far fa-user"></i> ${comment.author_name}
+                    </span>
+                    <span class="comment-date">
+                        <i class="far fa-clock"></i> ${formatDate(comment.created_at)}
+                    </span>
+                </div>
+                <div class="comment-content">
+                    <p>${comment.content}</p>
+                </div>
+            `;
+                return div;
+            }
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('tr-TR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            const commentForm = document.getElementById('comment-form');
+            commentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+
+
+                const commentData = {
+                    post_id: parseInt(postId, 10),
+                    username: document.getElementById('name').value,
+                    content: document.getElementById('comment').value
+                };
+
+                fetch(`/api/comments/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(commentData)
+
+                })
+                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status && response.code === 1) {
+                            commentForm.reset();
+                            fetchComments();
+                            showNotification('Yorum başarıyla eklendi', 'success');
+                        } else {
+                            showNotification(response.message || 'Yorum eklenirken bir hata oluştu', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Yorum gönderilirken hata:', error);
+                        showNotification('Yorum gönderilirken bir hata oluştu', 'error');
+                    })
+                    .finally(() => {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Gönder';
+                    });
+            });
+
+            fetchComments();
+        });
+    </script>
+</div>
+{% include "partials/footer.html" %}
+
+</body>
+</html>

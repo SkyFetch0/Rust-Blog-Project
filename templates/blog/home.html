@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page | Skyfetch</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+</head>
+
+<body>
+{% include "partials/header.html" %}
+
+
+<div class="container">
+    <header class="blog-header">
+        <div class="header-content">
+            <h1>Blog</h1>
+            <p>Düşüncelerimi ve deneyimlerimi paylaştığım blog</p>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Blog yazılarında ara...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+    </header>
+
+    <nav class="filter-nav">
+        <!--
+        <div class="filter-buttons">
+            <button class="active">Tümü</button>
+            <button>Teknoloji</button>
+            <button>Tasarım</button>
+            <button>Yaşam</button>
+            <button>Seyahat</button>
+        </div>
+        -->
+        <select class="sort-select">
+            <option value="newest">En Yeni</option>
+            <option value="oldest">En Eski</option>
+            <option value="popular">En Popüler</option>
+        </select>
+
+    </nav>
+
+    <main class="posts-container">
+
+        <div class="posts-grid">
+            {% for post in posts %}
+
+            <article class="post-card">
+                <a href="http://localhost:8080/blog/{{post.slug}}">
+                    <div class="card-image">
+                        {% if post.featured_image.is_some() %}
+                        <img src="{{ post.featured_image.as_ref().unwrap() }}" alt="Blog Post Resmi">
+                        {% endif %}
+                        <span class="category">Teknoloji</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            {% if let Some(date) = post.published_at %}
+                            <span class="date">{{ date|time_ago }}</span>
+                            {% endif %}
+
+                            <span class="read-time">
+                                    {% if let Some(count) = post.view_count %}
+                                        {{ count }} Görüntülenme
+                                    {% else %}
+                                        0 Görüntülenme
+                                    {% endif %}
+                                </span>
+                        </div>
+                        <h3>{{ post.title }}</h3>
+                        {% if post.excerpt.is_some() %}
+                        <p>{{ post.excerpt.as_ref().unwrap() }}</p>
+                        {% else %}
+                        <p>İçerik bulunamadı</p>
+                        {% endif %}
+                        <div class="card-footer">
+                            <div class="author">
+                                {% if let Some(image) = post.author_image %}
+                                <img src="{{ image }}" alt="{{ post.author_name }}">
+                                {% endif %}
+                                <span>{{ post.author_name }}</span>
+                            </div>
+                            <a href="/blog/{{ post.slug }}" class="read-more">Devamını Oku <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+            {% endfor %}
+        </div>
+
+
+</div>
+</main>
+
+<!--
+<div class="load-more">
+    <button>Daha Fazla Göster</button>
+</div>
+-->
+
+
+</div>
+{% include "partials/footer.html" %}
+
+</body>
+</html>

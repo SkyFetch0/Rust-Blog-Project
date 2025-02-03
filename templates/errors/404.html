@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sayfa Bulunamadı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                },
+            },
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+    <div class="max-w-2xl w-full text-center">
+        <div class="mb-8">
+            <h1 class="text-[150px] font-bold text-blue-600 leading-none">404</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-blue-900 mt-4">
+                Sayfa Bulunamadı
+            </h2>
+            <p class="text-blue-600/80 mt-4 max-w-md mx-auto">
+                Aradığınız sayfa taşınmış, silinmiş veya hiç var olmamış olabilir.
+            </p>
+        </div>
+
+        <div class="relative my-8">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-blue-200"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <div class="bg-white px-4">
+                    <i data-lucide="refresh-cw" class="w-8 h-8 text-blue-400 animate-spin-slow"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+            <a href="/" class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span>Ana Sayfaya Dön</span>
+            </a>
+
+            <button onclick="history.back()" class="flex items-center gap-2 px-6 py-3 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span>Geri Git</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>
