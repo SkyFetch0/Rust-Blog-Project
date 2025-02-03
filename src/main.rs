@@ -29,7 +29,7 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
-    println!("Server running at http://localhost:8080");
+    println!("Server running at http://0.0.0.0:8080");
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -54,7 +54,7 @@ async fn main() -> std::io::Result<()> {
         .workers(num_cpus::get() * 2)
         .backlog(1024)
         .keep_alive(Duration::from_secs(30))
-        .bind("127.0.0.1:8080")?
+        .bind("0.0.0.0:8080")?
         .run()
         .await
 }
