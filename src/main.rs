@@ -56,7 +56,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            // Artık sadece pool değil, tüm AppState'i ekliyoruz:
             .app_data(web::Data::new(app_state.clone()))
             .service(
                 fs::Files::new("/static", "static")
