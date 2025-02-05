@@ -26,4 +26,4 @@ argon2 = { version = "0.5", features = ["password-hash"] }
 tokio = "1.43.0"
 html-escape = "0.2.13"
 num_cpus = "1.16.0"
-
+moka = { version = "0.12.10", features = ["future"] }

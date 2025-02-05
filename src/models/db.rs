@@ -43,7 +43,7 @@ pub async fn init_db() -> Result<PgPool, DatabaseError> {
         .max_connections(5)
         .min_connections(1)
         .max_lifetime(Duration::from_secs(30 * 60))
-        .acquire_timeout(Duration::from_secs(30))
+        .acquire_timeout(Duration::from_secs(20))
         .idle_timeout(Duration::from_secs(180))
         .connect(&database_url)
         .await

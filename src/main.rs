@@ -3,14 +3,17 @@ mod routes;
 mod handlers;
 mod templates;
 mod filters;
+mod state;
 
 use actix_web::{App, HttpServer, web, middleware};
 use actix_files as fs;
-use dotenv::dotenv;
-use routes::configure_routes;
 use actix_cors::Cors;
-use std::{time::Duration};
-
+use dotenv::dotenv;
+use std::time::Duration;
+use state::AppState;
+use moka::future::Cache;
+use std::sync::Arc;
+use crate::routes::configure_routes;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
@@ -29,6 +32,18 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
+    let post_cache = Arc::new(
+        Cache::builder()
+            .max_capacity(1000)
+            .time_to_live(Duration::from_secs(120))
+            .build(),
+    );
+
+    let app_state = AppState {
+        pool: pool.clone(),
+        post_cache,
+    };
+
     println!("Server running at http://localhost:8080");
 
     HttpServer::new(move || {
@@ -41,7 +56,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .app_data(web::Data::new(pool.clone()))
+            // Artık sadece pool değil, tüm AppState'i ekliyoruz:
+            .app_data(web::Data::new(app_state.clone()))
             .service(
                 fs::Files::new("/static", "static")
                     .show_files_listing()
@@ -49,7 +65,7 @@ async fn main() -> std::io::Result<()> {
                     .use_etag(true)
                     .prefer_utf8(true)
             )
-            .configure(configure_routes)
+            .configure(routes::configure_routes)
     })
         .workers(num_cpus::get() * 2)
         .backlog(1024)

@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Serialize, Deserialize};
 use sqlx::postgres::PgPool;
 
-#[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug, sqlx::FromRow, Clone)]
 pub struct Category {
     pub id: i32,
     pub name: String,
@@ -26,7 +26,7 @@ pub struct Blogs {
     pub view_count: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug, sqlx::FromRow,Clone)]
 pub struct BlogWithAuthor {
     pub id: Option<i32>,
     pub title: String,
@@ -46,6 +46,10 @@ pub struct BlogWithAuthor {
     pub author_description: Option<String>,
     #[sqlx(skip)]
     pub categories: Vec<Category>,
+}
+
+impl BlogWithAuthor {
+
 }
 
 #[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
